@@ -4,9 +4,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 const LoginScreen = () => {
   return (
-    <View>
+    <SafeAreaView>
       <Text>LoginScreen</Text>
-    </View>
+    </SafeAreaView>
   );
 };
 
