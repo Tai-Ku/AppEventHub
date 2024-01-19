@@ -1,9 +1,11 @@
-import {View, Image, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import React, {useState} from 'react';
 import {globalStyles} from '../../styles/globalStyles';
 import Swiper from 'react-native-swiper';
 import {appInfo} from '../../constans/appInfo';
 import {appColors} from '../../constans/appColors';
+import {TextComponent} from '../../components';
+import {fontFamilies} from '../../constans/fontFamilies';
 
 type IProps = {
   navigation?: any;
@@ -60,7 +62,11 @@ const OnBoardingScreen: React.FC<IProps> = ({navigation}) => {
           alignItems: 'center',
         }}>
         <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-          <Text style={[styles.text, {color: appColors.gray2}]}>Skip</Text>
+          <TextComponent
+            text="Skip"
+            color={appColors.gray2}
+            font={fontFamilies.medium}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() =>
@@ -68,7 +74,11 @@ const OnBoardingScreen: React.FC<IProps> = ({navigation}) => {
               ? setIndex(prev => ++prev)
               : navigation.navigate('LoginScreen')
           }>
-          <Text style={[styles.text]}>Next</Text>
+          <TextComponent
+            text="Next"
+            color={appColors.white}
+            font={fontFamilies.medium}
+          />
         </TouchableOpacity>
       </View>
     </View>
