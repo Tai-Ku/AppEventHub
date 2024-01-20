@@ -1,11 +1,18 @@
-import {View, Text} from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import ButtonComponent from '../../components/ButtonComponent';
+import {appColors} from '../../constans/appColors';
+import {globalStyles} from '../../styles/globalStyles';
 
 const LoginScreen = () => {
   return (
-    <SafeAreaView>
-      <Text>LoginScreen</Text>
+    <SafeAreaView style={[globalStyles.container]}>
+      <ButtonComponent
+        type="primary"
+        text="Login"
+        onPress={() => console.log('Login')}
+        color={appColors.primary}
+      />
     </SafeAreaView>
   );
 };
