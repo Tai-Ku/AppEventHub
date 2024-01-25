@@ -12,7 +12,6 @@ export const globalStyles = StyleSheet.create({
     fontSize: 14,
     color: appColors.text,
   },
-
   button: {
     flexDirection: 'row',
     borderRadius: 12,
