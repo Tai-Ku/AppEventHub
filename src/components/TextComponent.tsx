@@ -30,9 +30,12 @@ const TextComponent: React.FC<IProps> = ({
         {
           color: color ?? appColors.text,
           flex: flex ?? 0,
-          fontSize: size ?? isTitle ? 24 : 14,
-          fontFamily:
-            font ?? isTitle ? fontFamilies.bold : fontFamilies.regular,
+          fontSize: size ? size : isTitle ? 24 : 14,
+          fontFamily: font
+            ? font
+            : isTitle
+            ? fontFamilies.medium
+            : fontFamilies.regular,
         },
         style,
       ]}>
