@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
+import {View, TouchableOpacity, TextInput, StyleSheet} from 'react-native';
 import React, {ReactNode, useState} from 'react';
 import {Eye, EyeSlash} from 'iconsax-react-native';
 import {appColors} from '../constans/appColors';
@@ -46,7 +38,7 @@ const InputComponent: React.FC<IProps> = ({
   const [isShowPassWord, setIsShowPassWord] = useState(isPassWord ?? false);
 
   return (
-    <View style={[styles.inputContainer, {marginBottom: marginBottom}]}>
+    <View style={[styles.inputContainer, {marginBottom}]}>
       {prefix}
       <TextInput
         placeholder={placeholder}
