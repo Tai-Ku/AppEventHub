@@ -14,6 +14,7 @@ import {ContainersComponent} from '../../components';
 import {fontFamilies} from '../../constans/fontFamilies';
 import ButtonComponent from '../../components/ButtonComponent';
 import SocialLogin from './components/SocialLogin';
+import authenticationApi from '../../apis/authApi';
 
 type IProps = {
   navigation?: any;
@@ -23,6 +24,16 @@ const LoginScreen: React.FC<IProps> = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [passWord, setPassword] = useState('');
   const [isRemember, setIsRemember] = useState(true);
+
+  const handleLogin = async () => {
+    try {
+      const res = await authenticationApi.HandleAuthentication('/login');
+
+      console.log(JSON.stringify(res));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <ContainersComponent isImageBackground isScroll>
@@ -83,7 +94,12 @@ const LoginScreen: React.FC<IProps> = ({navigation}) => {
       <Space height={16} />
 
       <SectionComponent>
-        <ButtonComponent text="SIGN IN" type="primary" fontFamily="medium" />
+        <ButtonComponent
+          onPress={handleLogin}
+          text="SIGN IN"
+          type="primary"
+          fontFamily="medium"
+        />
       </SectionComponent>
       <SocialLogin />
       <SectionComponent>
