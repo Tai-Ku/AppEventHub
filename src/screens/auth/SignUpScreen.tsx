@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
+import {yupResolver} from '@hookform/resolvers/yup';
 import {appColors} from '../../constans/appColors';
 import {globalStyles} from '../../styles/globalStyles';
-import {Image, Switch, View} from 'react-native';
+import * as yup from 'yup';
+
 import {
+  FormItem,
   InputComponent,
+  LoadingModal,
   RowComponent,
   SectionComponent,
   Space,
@@ -14,85 +18,176 @@ import {ContainersComponent} from '../../components';
 import {fontFamilies} from '../../constans/fontFamilies';
 import ButtonComponent from '../../components/ButtonComponent';
 import SocialLogin from './components/SocialLogin';
+import authenticationApi from '../../apis/authApi';
+import {Controller, useForm} from 'react-hook-form';
+import {useDispatch} from 'react-redux';
+import {addAuth} from '../../redux/reducers/authReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type IProps = {
   navigation?: any;
 };
 
-const initValue = {
-  fullName: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
+type IFormSignUp = {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
 };
 
+const schema = yup.object().shape({
+  fullName: yup.string().required('Full Name is required').label('Full Name'),
+  email: yup.string().email().required('Email is required').label('Email'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+      'Password must have at least 8 characters, one uppercase, one number',
+    )
+    .label('Password'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords must match')
+    .required('Confirm Password is required')
+    .label('Confirm Password'),
+});
+
 const SignUpScreen: React.FC<IProps> = ({navigation}) => {
-  const [values, setValues] = useState(initValue);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleOnChange = (key: keyof typeof initValue, value: string) => {
-    const data = {...values};
-    data[key] = value;
+  const {
+    control,
+    setValue,
+    formState: {errors},
+    handleSubmit,
+  } = useForm<IFormSignUp>({
+    resolver: yupResolver(schema),
+  });
 
-    setValues(data);
+  const dispatch = useDispatch();
+
+  const handleRegister = async (values: IFormSignUp) => {
+    try {
+      setIsLoading(true);
+      const res = await authenticationApi.HandleAuthentication(
+        '/register',
+        values,
+        'post',
+      );
+      dispatch(addAuth(res.data));
+      await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <ContainersComponent isImageBackground isScroll isBack>
-      <SectionComponent>
-        <TextComponent text="Sign Up" font={fontFamilies.medium} size={24} />
-        <Space height={21} />
-        <InputComponent
-          allowClear
-          value={values.fullName}
-          placeholder="Full name"
-          prefix={<User size={22} color={appColors.gray} />}
-          onChange={(value: string) => handleOnChange('fullName', value)}
-          marginBottom={16}
-        />
-        <InputComponent
-          allowClear
-          value={values.email}
-          placeholder="Email"
-          prefix={<Sms size={22} color={appColors.gray} />}
-          onChange={(value: string) => handleOnChange('email', value)}
-          marginBottom={16}
-        />
+    <>
+      <ContainersComponent isImageBackground isScroll isBack>
+        <SectionComponent>
+          <TextComponent text="Sign Up" font={fontFamilies.medium} size={24} />
+          <Space height={21} />
+          <FormItem error={errors?.fullName?.message}>
+            <Controller
+              control={control}
+              name="fullName"
+              defaultValue=""
+              render={({field: {value}}) => (
+                <InputComponent
+                  allowClear
+                  value={value}
+                  placeholder="Full name"
+                  prefix={<User size={22} color={appColors.gray} />}
+                  onChange={value => setValue('fullName', value)}
+                />
+              )}
+            />
+          </FormItem>
+          <FormItem error={errors?.email?.message}>
+            <Controller
+              control={control}
+              name="email"
+              defaultValue=""
+              render={({field: {value}}) => (
+                <InputComponent
+                  allowClear
+                  value={value}
+                  placeholder="Email"
+                  prefix={<Sms size={22} color={appColors.gray} />}
+                  onChange={value =>
+                    setValue('email', value, {shouldValidate: true})
+                  }
+                />
+              )}
+            />
+          </FormItem>
 
-        <InputComponent
-          isPassWord
-          value={values.password}
-          placeholder="Your password"
-          prefix={<Lock size={22} color={appColors.gray} />}
-          onChange={(value: string) => handleOnChange('password', value)}
-          marginBottom={20}
-        />
-        <InputComponent
-          isPassWord
-          value={values.password}
-          placeholder="Confirm password"
-          prefix={<Lock size={22} color={appColors.gray} />}
-          onChange={(value: string) => handleOnChange('password', value)}
-          marginBottom={20}
-        />
-      </SectionComponent>
+          <FormItem error={errors?.password?.message}>
+            <Controller
+              control={control}
+              name="password"
+              defaultValue=""
+              render={({field: {value}}) => (
+                <InputComponent
+                  isPassWord
+                  value={value}
+                  placeholder="Your password"
+                  prefix={<Lock size={22} color={appColors.gray} />}
+                  onChange={value =>
+                    setValue('password', value, {shouldValidate: true})
+                  }
+                />
+              )}
+            />
+          </FormItem>
 
-      <Space height={16} />
+          <FormItem error={errors?.confirmPassword?.message}>
+            <Controller
+              control={control}
+              name="confirmPassword"
+              defaultValue=""
+              render={({field: {value}}) => (
+                <InputComponent
+                  isPassWord
+                  value={value}
+                  placeholder="Confirm password"
+                  prefix={<Lock size={22} color={appColors.gray} />}
+                  onChange={value =>
+                    setValue('confirmPassword', value, {shouldValidate: true})
+                  }
+                />
+              )}
+            />
+          </FormItem>
+        </SectionComponent>
 
-      <SectionComponent>
-        <ButtonComponent text="SIGN UP" type="primary" fontFamily="medium" />
-      </SectionComponent>
-      <SocialLogin />
-      <SectionComponent>
-        <RowComponent justifyContent="center">
-          <TextComponent text="Don’t have an account?  " />
+        <Space height={16} />
+
+        <SectionComponent>
           <ButtonComponent
-            type="link"
-            text="Sign-in"
-            onPress={() => navigation.goBack('LoginScreen')}
+            onPress={handleSubmit(handleRegister)}
+            text="SIGN UP"
+            type="primary"
+            fontFamily="medium"
           />
-        </RowComponent>
-      </SectionComponent>
-    </ContainersComponent>
+        </SectionComponent>
+        <SocialLogin />
+        <SectionComponent>
+          <RowComponent justifyContent="center">
+            <TextComponent text="Don’t have an account?  " />
+            <ButtonComponent
+              type="link"
+              text="Sign-in"
+              onPress={() => navigation.goBack('LoginScreen')}
+            />
+          </RowComponent>
+        </SectionComponent>
+      </ContainersComponent>
+      <LoadingModal visible={isLoading} />
+    </>
   );
 };
 

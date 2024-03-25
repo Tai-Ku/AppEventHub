@@ -5,6 +5,8 @@ import ContainersComponent from './ContainersComponent';
 import SectionComponent from './SectionComponent';
 import RowComponent from './RowComponent';
 import ButtonComponent from './ButtonComponent';
+import LoadingModal from './LoadingModal';
+import FormItem from './FormItem';
 
 export {
   Space,
@@ -14,4 +16,6 @@ export {
   SectionComponent,
   RowComponent,
   ButtonComponent,
+  LoadingModal,
+  FormItem,
 };
